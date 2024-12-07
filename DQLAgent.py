@@ -83,3 +83,35 @@ def learn(self, episodes):
             self.replay()
     print()
 
+def test(self, episodes, min_accuracy=0.0,
+        min_performance=0.0, verbose=True,
+        full=True):
+    ma = self.env.min_accuracy
+    self.env.min_accuracy = min_accuracy
+    if hasattr(self.env, 'min_performance'):
+        mp = self.env.min_performance
+        self.env.min_performance = min_performance
+        self.performances = list()
+    for e in range(1, episodes + 1):
+        state, _ = self.env.reset()
+        state = self._reshape(state)
+        for f in range(1, 5001):
+            action = np.argmax(self.model.predict(state)[0])
+            state, reward, done, trunc, _ = self.env.step(action)
+            state = self._reshape(state)
+            if done:
+                templ = f'total reward={f:4d} | '
+                templ += f'accuracy={self.env.accuracy:.3f}'
+                if hasattr(self.env, 'min_performance'):
+                    self.performances.append(self.env.performance)
+                    templ += f' | performance={self.env.performance:.3f}'
+                if verbose:
+                    if full:
+                        print(templ)
+                    else:
+                        print(templ, end='\r')
+                break
+    self.env.min_accuracy = ma
+    if hasattr(self.env, 'min_performance'):
+        self.env.min_performance = mp
+    print()
