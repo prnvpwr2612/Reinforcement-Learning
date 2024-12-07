@@ -56,3 +56,30 @@ class DQLAgent:
             if self.epsilon > self.epsilon_min:
                 self.epsilon *= self.epsilon_decay
     
+def learn(self, episodes):
+    for e in range(1, episodes + 1):
+        self.episodes += 1
+        state, _ = self.env.reset()
+        state = self._reshape(state)
+        treward = 0
+        for f in range(1, 5000):
+            self.f = f
+            action = self.act(state)
+            next_state, reward, done, trunc, _ = self.env.step(action)
+            treward += reward
+            next_state = self._reshape(next_state)
+            self.memory.append(
+            [state, action, next_state, reward, done])
+            state = next_state
+            if done:
+                self.trewards.append(treward)
+                self.max_treward = max(self.max_treward, treward)
+                templ = f'episode={self.episodes:4d} | '
+                templ += f'treward={treward:7.3f}'
+                templ += f' | max={self.max_treward:7.3f}'
+                print(templ, end='\r')
+                break
+        if len(self.memory) > self.batch_size:
+            self.replay()
+    print()
+
