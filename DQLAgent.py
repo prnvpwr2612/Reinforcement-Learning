@@ -8,10 +8,7 @@ from collections import deque
 from keras.layers import Dense, Flatten
 from keras.models import Sequential
 warnings.simplefilter('ignore')
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-from tensorflow.python.framework.ops import disable_eager_execution
-disable_eager_execution()
-opt = keras.optimizers.legacy.Adam
+opt = keras.optimizers.Adam(learning_rate=0.0001)
 class DQLAgent:
     def __init__(self, symbol, feature, n_features, env, hu=24, lr=0.001):
         self.epsilon = 1.0
@@ -33,7 +30,7 @@ class DQLAgent:
         input_dim=self.n_features))
         self.model.add(Dense(hu, activation='relu'))
         self.model.add(Dense(2, activation='linear'))
-        self.model.compile(loss='mse', optimizer=opt(learning_rate=lr))
+        self.model.compile(loss='mse', optimizer=opt)
 
     def _reshape(self, state):
         state = state.flatten()
